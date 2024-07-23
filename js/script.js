@@ -63,31 +63,13 @@ var switchMenuToActive = function () {
 // On page load (before images or CSS)
 document.addEventListener("DOMContentLoaded", function (event) {
 
-// TODO: STEP 0: Look over the code from
-// *** start ***
-// to
-// *** finish ***
-// below.
-// We changed this code to retrieve all categories from the server instead of
-// simply requesting home HTML snippet. We now also have another function
-// called buildAndShowHomeHTML that will receive all the categories from the server
-// and process them: choose random category, retrieve home HTML snippet, insert that
-// random category into the home HTML snippet, and then insert that snippet into our
-// main page (index.html).
-//
-// TODO: STEP 1: Substitute [...] below with the *value* of the function buildAndShowHomeHTML,
-// so it can be called when server responds with the categories data.
-
-// *** start ***
 // On first load, show home view
 showLoading("#main-content");
 $ajaxUtils.sendGetRequest(
   allCategoriesUrl,
-  [...], // ***** <---- TODO: STEP 1: Substitute [...] ******
+  buildAndShowHomeHTML, // ***** <---- Sustituido con buildAndShowHomeHTML ******
   true); // Explicitly setting the flag to get JSON from server processed into an object literal
 });
-// *** finish **
-
 
 // Builds HTML for the home page based on categories array
 // returned from the server.
@@ -98,35 +80,17 @@ function buildAndShowHomeHTML (categories) {
     homeHtmlUrl,
     function (homeHtml) {
 
-      // TODO: STEP 2: Here, call chooseRandomCategory, passing it retrieved 'categories'
-      // Pay attention to what type of data that function returns vs what the chosenCategoryShortName
-      // variable's name implies it expects.
-      // var chosenCategoryShortName = ....
+      // Llamada a chooseRandomCategory pasando las categories recuperadas
+      var chosenCategoryShortName = chooseRandomCategory(categories).short_name;
 
+      // Sustituir {{randomCategoryShortName}} en el fragmento HTML de la página principal con la categoría elegida
+      var homeHtmlToInsertIntoMainPage = insertProperty(homeHtml, "randomCategoryShortName", "'" + chosenCategoryShortName + "'");
 
-      // TODO: STEP 3: Substitute {{randomCategoryShortName}} in the home html snippet with the
-      // chosen category from STEP 2. Use existing insertProperty function for that purpose.
-      // Look through this code for an example of how to do use the insertProperty function.
-      // WARNING! You are inserting something that will have to result in a valid Javascript
-      // syntax because the substitution of {{randomCategoryShortName}} becomes an argument
-      // being passed into the $dc.loadMenuItems function. Think about what that argument needs
-      // to look like. For example, a valid call would look something like this:
-      // $dc.loadMenuItems('L')
-      // Hint: you need to surround the chosen category short name with something before inserting
-      // it into the home html snippet.
-      //
-      // var homeHtmlToInsertIntoMainPage = ....
-
-
-      // TODO: STEP 4: Insert the produced HTML in STEP 3 into the main page
-      // Use the existing insertHtml function for that purpose. Look through this code for an example
-      // of how to do that.
-      // ....
-
+      // Insertar el HTML producido en la página principal
+      insertHtml("#main-content", homeHtmlToInsertIntoMainPage);
     },
-    false); // False here because we are getting just regular HTML from the server, so no need to process JSON.
+    false); // False aquí porque estamos obteniendo solo HTML regular del servidor, por lo que no es necesario procesar JSON.
 }
-
 
 // Given array of category objects, returns a random category object.
 function chooseRandomCategory (categories) {
@@ -137,7 +101,6 @@ function chooseRandomCategory (categories) {
   return categories[randomArrayIndex];
 }
 
-
 // Load the menu categories view
 dc.loadMenuCategories = function () {
   showLoading("#main-content");
@@ -145,7 +108,6 @@ dc.loadMenuCategories = function () {
     allCategoriesUrl,
     buildAndShowCategoriesHTML);
 };
-
 
 // Load the menu items view
 // 'categoryShort' is a short_name for a category
@@ -155,7 +117,6 @@ dc.loadMenuItems = function (categoryShort) {
     menuItemsUrl + categoryShort + ".json",
     buildAndShowMenuItemsHTML);
 };
-
 
 // Builds HTML for the categories page based on the data
 // from the server
@@ -181,7 +142,6 @@ function buildAndShowCategoriesHTML (categories) {
     },
     false);
 }
-
 
 // Using categories data and snippets html
 // build categories view HTML to be inserted into page
@@ -211,8 +171,6 @@ function buildCategoriesViewHtml(categories,
   return finalHtml;
 }
 
-
-
 // Builds HTML for the single category page based on the data
 // from the server
 function buildAndShowMenuItemsHTML (categoryMenuItems) {
@@ -237,7 +195,6 @@ function buildAndShowMenuItemsHTML (categoryMenuItems) {
     },
     false);
 }
-
 
 // Using category and menu items data and snippets html
 // build menu items view HTML to be inserted into page
@@ -307,7 +264,6 @@ function buildMenuItemsViewHtml(categoryMenuItems,
   return finalHtml;
 }
 
-
 // Appends price with '$' if price exists
 function insertItemPrice(html,
                          pricePropName,
@@ -321,7 +277,6 @@ function insertItemPrice(html,
   html = insertProperty(html, pricePropName, priceValue);
   return html;
 }
-
 
 // Appends portion name in parens if it exists
 function insertItemPortionName(html,
@@ -337,7 +292,7 @@ function insertItemPortionName(html,
   return html;
 }
 
-
 global.$dc = dc;
 
 })(window);
+
